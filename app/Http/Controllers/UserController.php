@@ -66,9 +66,8 @@ class UserController extends Controller
         }
         $user->active = $request->active;
         if ($user->save()) {
-            echo "Driver updated";
+            return response()->json(['success'=>'Driver updated']);
         };
-        return true;
     }
 
     public function getAllDrivers(Request $request)
@@ -218,7 +217,7 @@ class UserController extends Controller
             $user_permission = UserPermission::findOrFail($req['id']);
             $user_permission->value = $req['value'];
             if ($user_permission->save()) {
-                echo "  updated permission\n";
+                return response()->json(["success"=>"updated permission\n"]);
             }
         }
     }
@@ -254,9 +253,8 @@ class UserController extends Controller
         $users = User::findOrFail($id);
         $users->active = $request->active;
         if ($users->save()) {
-            return "update active in user";
+            return response()->json(["success"=>"update active in user"]);
         }
-
     }
 
     public function UserIsDelete(Request $request, $id)
@@ -264,9 +262,8 @@ class UserController extends Controller
         $users = User::findOrFail($id);
         $users->is_deleted = $request->is_deleted;
         if ($users->save()) {
-            return "update is deleted in user";
+            return response()->json(["success"=>"update is deleted in user"]);
         }
-
     }
 
     public function updateUserBranch(Request $request, $id)
@@ -278,7 +275,7 @@ class UserController extends Controller
         $users = User::findOrFail($id);
         $users->branch_id = $request->branch_id;
         if ($users->save()) {
-            return "update branch_id in users";
+            return response()->json(["success"=>"update branch_id in users"]);
         }
     }
 
@@ -303,18 +300,16 @@ class UserController extends Controller
             $user->active = $request->active;
         }
         if ($user->save()) {
-            echo "user updated";
+            return response()->json(["success"=>"user updated"]);
         };
     }
 
     public function createUser(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'phone' => 'required|unique:users',
             'name' => 'required|unique:users',
         ]);
-
         if ($validator->fails()) {
             return response()->json([
                 'status_code' => 400,

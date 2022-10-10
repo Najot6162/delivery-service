@@ -23,44 +23,16 @@ class ProblemController extends Controller
         $user = Auth::user();
         $data_order = \Carbon\Carbon::createFromFormat('Y-m-d\TH:i:s.u\Z', $request[0]['DataOrder']);
 
-        $validator = Validator::make($request->all(), [
-            $request[0]['AGENTID'] => 'required',
-            $request[0]['AGENT'] => 'required',
-            $request[0]['DokumentId'] => 'required',
-            $request[0]['PRAVODKA'] => 'required',
-            $request[0]['DataOrder'] => 'required',
-            $request[0]['Content'] => 'required',
-            $request[0]['status'] => 'required',
-            $request[0]['Dokumentfoundations'] => 'required',
-            $request[0]['Dokumentfoundationsid'] => 'required',
-            $request[0]['Sklad'] => 'required',
-            $request[0]['SkladID'] => 'required',
-            $request[0]['NakNumber'] => 'required',
-            $request[0]['NakData'] => 'required',
-            $request[0]['diffekt'] => 'required',
-            $request[0]['complekt'] => 'required',
-            $request[0]['NamerOrder'] => 'required',
-            $request[0]['GUID'] => 'required',
-            $request[0]['GUIDID'] => 'required',
-            $request[0]['sales'] => 'required',
-            $request[0]['salesid'] => 'required',
-            $request[0]['Id1C'] => 'required',
-        ]);
         $branches = [
             'branch_id' => []
         ];
-
         $branch = BranchList::where('token', $request[0]['SkladID'])->get();
-
         if ($branch->isEmpty()) {
             $branchList = new BranchList();
-
             $branchList->title = $request[0]['Sklad'];
             $branchList->token = $request[0]['SkladID'];
+            $branchList->save();
 
-            if ($branchList->save()) {
-                echo "BranchList saved  ";
-            };
             $branch = BranchList::where('token', $request[0]['SkladID'])->get();
             array_push($branches['branch_id'], $branch[0]['id']);
         } else {
@@ -90,20 +62,14 @@ class ProblemController extends Controller
         $problem->id_1c = $request[0]['Id1C'];
         $problem->status_app = $request[0]['status'];
         $problem->status = 1;
-        if ($problem->save()) {
-            echo "problem app saved ";
-        }
+        $problem->save();
 
         $agent = Agent::where('agent_id', $request[0]['AGENTID'])->get();
-
         if ($agent->isEmpty()) {
             $agent = new Agent();
             $agent->agent_id = $request[0]['AGENTID'];
             $agent->agent = $request[0]['AGENT'];
-
-            if ($agent->save()) {
-                echo "agent app saved";
-            }
+            $agent->save();
         }
 
         foreach ($request[0]['goods'] as $good) {
@@ -115,11 +81,8 @@ class ProblemController extends Controller
             $problem_product->imel_id = $good['IMEIId'];
             $problem_product->product_amount = $good['amount'];
             $problem_product->product_code = $good['code'];
-            if ($problem_product->save()) {
-                echo " problem_product saved  ";
-            };
+            $problem_product->save();
         };
-
         return response()->json([
             'status_code' => 201,
             'message' => 'all data saved'
@@ -129,7 +92,6 @@ class ProblemController extends Controller
     public function getAllProblems(Request $request)
     {
         $search = $request['search'] ?? "";
-        $pageCount = $request['page'] ?? "10";
         $start_date = $request->start_date;
         $end_date = $request->end_date;
         $problems = ProblemApp::with(['problem_time_step', 'problem_product',
@@ -151,14 +113,12 @@ class ProblemController extends Controller
         if ($request->user_id) {
             $problems->whereIn('user_id', $request->user_id);
         }
-
         return BranchResource::collection($problems->paginate($request->perPage));
     }
 
     public function updateProblem(Request $request, $id)
     {
         $user = Auth::user();
-
         $problem = ProblemApp::findOrFail($id);
         if ($request->user_id) {
             $problem->user_id = $request->user_id;
@@ -179,17 +139,14 @@ class ProblemController extends Controller
         if ($request->branch_id) {
             $time_step->branch_id = $request->branch_id;
         }
-
         if ($request->comment){
             $time_step->comment = $request->comment;
         }
-
         if ($request->new_product) {
             $problem = ProblemProduct::findOrFail($id);
             $problem->active = 0;
-            if ($problem->save()) {
-                echo "problem saved  ";
-            };
+            $problem->save();
+
             $problem_product = new ProblemProduct();
             $problem_product->problem_uuid = $problem->uuid;
             $problem_product->product_name = $request->product_name;
@@ -199,18 +156,14 @@ class ProblemController extends Controller
             $problem_product->product_amount = $request->product_amount;
             $problem_product->product_code = $request->product_code;
             $problem_product->code = 1;
-            if ($problem_product->save()) {
-                echo " problem_product saved  ";
-            };
-
+            $problem_product->save();
         }
-        if ($time_step->save()) {
-            echo "time_step saved  ";
-        };
-        if ($problem->save()) {
-            return "updated problem app";
+        if ($time_step->save() &&  $problem->save()){
+            return response()->json([
+                'status_code' => 200,
+                'message' => 'updated'
+            ], 201);
         }
-
         }
 
     public function getProblem(Request $request, $id)
@@ -270,7 +223,7 @@ class ProblemController extends Controller
         $problem_service->status = $request->status;
 
         if ($problem_service->save()) {
-            echo " problem service created";
+            return response()->json(['success'=>' problem service created']);
         }
     }
 
@@ -283,28 +236,19 @@ class ProblemController extends Controller
     public function getAllProblemServices(Request $request)
     {
         $search = $request['search'] ?? "";
-        $pageCount = $request['page'] ?? "10";
-
         $problem_services = ProblemService::where('title', 'LIKE', "%$search%")->paginate($request->perPage);
         return $problem_services;
     }
 
     public function updateProblemService(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required',
-            'address' => 'required',
-            'phone' => 'required'
-        ]);
         $problem_service = ProblemService::findOrFail($id);
         $problem_service->title = $request->title;
         $problem_service->address = $request->address;
         $problem_service->phone = $request->phone;
         $problem_service->status = $request->status;
-
-
         if ($problem_service->save()) {
-            echo " problem service updated";
+            return response()->json(['success'=>' problem service updated']);
         }
     }
 
@@ -312,7 +256,7 @@ class ProblemController extends Controller
     {
         $problem_service = ProblemService::findOrFail($id);
         if ($problem_service->delete()) {
-            return "deleted problem service";
+            return response()->json(['success'=>' problem service deleted']);
         }
     }
 

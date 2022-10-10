@@ -12,20 +12,17 @@ class CarController extends Controller
 {
     public function createCar(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'number' => 'required|unique:car_models',
             'model' => 'required',
             'active' => 'required'
         ]);
-
         if ($validator->fails()) {
             return response()->json([
                 'status_code' => 400,
                 'message' => $validator->errors()
             ], 400);
         }
-
         $car = new CarModel();
         $car->number = $request->number;
         $car->model = $request->model;
@@ -40,7 +37,6 @@ class CarController extends Controller
 
     public function getAllCars(Request $request)
     {
-        $pageCount = $request['page'] ?? "10";
         $cars = CarModel::with('car_term')->paginate($request->perPage);
         return BranchResource::collection($cars);
     }
@@ -56,17 +52,15 @@ class CarController extends Controller
             $car->number = $request->number;
             $car->model = $request->model;
             $car->active = $request->active;
-
             if ($car->save()) {
-                echo "car updated  ";
+                return response()->json(['success'=>'car updated']);
             };
-
     }
     public function updateOnlyActiveCar(Request $request,$id){
         $car = CarModel::findOrFail($id);
         $car->active = $request->active;
         if ($car->save()) {
-            echo "car active updated  ";
+            return response()->json(['success'=>'car updated']);
         };
     }
     public function getCar($id){
@@ -77,7 +71,7 @@ class CarController extends Controller
     {
         $car = CarModel::findOrFail($id);
         if ($car->delete()) {
-            return "Deleted";
+            return response()->json(['success'=>'car Deleted']);
         }
     }
 
@@ -89,7 +83,6 @@ class CarController extends Controller
 
     public function updateCarTerm(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'insure_date' => 'required',
             'attorney_date' => 'required',
@@ -97,7 +90,6 @@ class CarController extends Controller
             'adver_date' => 'required',
             'technical_date' => 'required'
         ]);
-
         if ($validator->fails()) {
             return response()->json([
                 'status_code' => 400,
@@ -106,7 +98,6 @@ class CarController extends Controller
         }
 
         $car_term = CarTerm::where('car_model_id',$request->car_model_id)->first();
-
         if ($car_term){
             $car_term = CarTerm::findOrFail($car_term->id);
             $car_term->car_model_id = $request->car_model_id;
@@ -116,7 +107,7 @@ class CarController extends Controller
             $car_term->technical_date = $request->technical_date;
             $car_term->attorney = $request->attorney;
             if ($car_term->save()) {
-            echo "car_term updated  ";
+                return response()->json(['success'=>'car_term updated']);
             }
         }else{
             $car_term = new CarTerm();
@@ -126,9 +117,8 @@ class CarController extends Controller
             $car_term->adver_date = $request->adver_date;
             $car_term->technical_date = $request->technical_date;
             $car_term->attorney = $request->attorney;
-
             if ($car_term->save()) {
-                echo "car_term created  ";
+                return response()->json(['success'=>'car_term updated']);
             }
         }
     }

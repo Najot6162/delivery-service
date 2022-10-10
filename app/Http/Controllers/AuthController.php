@@ -30,7 +30,6 @@ class AuthController extends Controller
         if (!auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        $user = User::with(['userPermission', 'userPermission.menus', 'carModel'])->where('phone', $request->phone)->first();
         $tokenData = auth()->user()->createToken('MyApiToken');
         $token = $tokenData->accessToken;
         $expiration = $tokenData->token->expires_at->diffInSeconds(Carbon::now());

@@ -21,26 +21,6 @@ class RelocationController extends Controller
     public function CreateRelocation(Request $request)
     {
         $uuid = Str::uuid()->toString();
-
-        $validator = Validator::make($request->all(), [
-            $request[0]['AGENTID'] => 'required',
-            $request[0]['AGENT'] => 'required',
-            $request[0]['DokumentId'] => 'required',
-            $request[0]['PRAVODKA'] => 'required',
-            $request[0]['DataOrder'] => 'required',
-            $request[0]['Content'] => 'required',
-            $request[0]['DataRecieve'] => 'required',
-            $request[0]['AGENTRecieve'] => 'required',
-            $request[0]['AGENTRecieveID'] => 'required',
-            $request[0]['SkladSend'] => 'required',
-            $request[0]['SkladSendID'] => 'required',
-            $request[0]['SkladRecieve'] => 'required',
-            $request[0]['SkladRecieveID'] => 'required',
-            $request[0]['NamerOrder'] => 'required',
-            $request[0]['Id1C'] => 'required',
-        ]);
-
-
         $branches = [
             'branch_send_id' => [],
             'branch_receive_id'=>[]
@@ -53,33 +33,26 @@ class RelocationController extends Controller
 
             $branchList->title = $request[0]['SkladSend'];
             $branchList->token = $request[0]['SkladSendID'];
+            $branchList->save();
 
-            if ($branchList->save()) {
-                echo "BranchList saved  ";
-            };
             $branch = BranchList::where('token', $request[0]['SkladSendID'])->get();
             array_push($branches['branch_send_id'], $branch[0]['id']);
         } else {
             array_push($branches['branch_send_id'], $branch[0]['id']);
         }
 
-
         $branch = BranchList::where('token', $request[0]['SkladRecieveID'])->get();
         if ($branch->isEmpty()) {
             $branchList = new BranchList();
-
             $branchList->title = $request[0]['SkladRecieve'];
             $branchList->token = $request[0]['SkladRecieveID'];
+            $branchList->save();
 
-            if ($branchList->save()) {
-                echo "BranchList saved  ";
-            };
             $branch = BranchList::where('token', $request[0]['SkladRecieveID'])->get();
             array_push($branches['branch_receive_id'], $branch[0]['id']);
         } else {
             array_push($branches['branch_receive_id'], $branch[0]['id']);
         }
-
 
         $order_date = \Carbon\Carbon::createFromFormat('Y-m-d\TH:i:s.u\Z', $request[0]['DataOrder']);
         $date_order = \Carbon\Carbon::createFromFormat('Y-m-d\TH:i:s.u\Z', $request[0]['DataOrder'])->format('Y-m-d');
@@ -105,19 +78,14 @@ class RelocationController extends Controller
         $relocation->config_time_id = $config_time_id;
         $relocation->status = 1;
         $relocation->status_time = 1;
-        if ($relocation->save()) {
-            echo " Relocation_app  saved  ";
-        }
+        $relocation->save();
 
         $agent = Agent::where('agent_id', $request[0]['AGENTID'])->get();
         if ($agent->isEmpty()) {
             $agent = new Agent();
             $agent->agent_id = $request[0]['AGENTID'];
             $agent->agent = $request[0]['AGENT'];
-
-            if ($agent->save()) {
-                echo "agent app saved";
-            }
+            $agent->save();
         }
 
         foreach ($request[0]['goods'] as $good) {
@@ -131,9 +99,6 @@ class RelocationController extends Controller
             $relocation_products->product_code = $good['code'];
             $relocation_products->save();
         };
-
-        echo " Relocation Products saved  ";
-
         return response()->json([
             'status_code' => 201,
             'message' => 'all data saved'
@@ -143,7 +108,6 @@ class RelocationController extends Controller
     public function getAllRelocation(Request $request)
     {
         $search = $request['search'] ?? "";
-        $pageCount = $request['page'] ?? "10";
         $start_date = $request->start_date;
         $end_date = $request->end_date;
         $branchs = BranchList::get();
@@ -179,7 +143,6 @@ class RelocationController extends Controller
         if ($request->driver_id) {
             $relocations->whereIn('driver_id', $request->driver_id);
         }
-
         return BranchResource::collection($relocations->paginate($request->perPage));
     }
 
@@ -193,7 +156,6 @@ class RelocationController extends Controller
             //send notification
             $notife = new NotificationController();
             $notife->sendNotification($request->driver_id);
-
         }
         $relocation->status = $request->step;
         if($request->status_time){
@@ -207,15 +169,9 @@ class RelocationController extends Controller
         if ($request->comment){
             $time_step->comment = $request->comment;
         }
-        if ($time_step->save()) {
-            echo "time_step saved  ";
-        };
-
-        if ($relocation->save()) {
-            echo "relocation updated  ";
-        };
-
-        return true;
+        if ($time_step->save() && $relocation->save() ) {
+            return response()->json(['success'=>'Relocation updated']);
+        }
     }
 
     public function getRelocation(Request $request, $id)

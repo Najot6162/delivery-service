@@ -61,7 +61,7 @@ class NotificationController extends Controller
 
         $user->fcm_token = $request->fcm_token;
         if ($user->save()){
-            echo "saved fcm token.";
+            return response()->json(['success'=>'saved fcm token']);
         }
     }
 }

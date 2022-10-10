@@ -34,7 +34,8 @@ class FileController extends Controller
         ];
         Storage::disk('public')->put('/app/app.json', json_encode($data));
 
-        return "saved";
+        return response()->json(['success'=>' file saved']);
+
     }
 
     public function getDownload()

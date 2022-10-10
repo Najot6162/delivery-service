@@ -10,15 +10,12 @@ use Illuminate\Support\Facades\Validator;
 
 class BranchController extends Controller
 {
-
     public function createBranch(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'title' => 'required|unique:branch_lists',
             'token' => 'required',
         ]);
-
         if ($validator->fails()) {
             return response()->json([
                 'status_code' => 400,
@@ -27,14 +24,13 @@ class BranchController extends Controller
         }
 
         $branchList = new BranchList();
-
         $branchList->title = $request->title;
         $branchList->token = $request->token;
         if ($request->region_id) {
             $branchList->region_id = $request->region_id;
         }
         if ($branchList->save()) {
-            echo "branchList saved  ";
+            return response()->json(['success'=>'branchList saved']);
         };
 
     }
@@ -45,7 +41,7 @@ class BranchController extends Controller
         $branch->region_id = $request->region_id;
 
         if ($branch->save()) {
-            echo "branchList updated  ";
+            return response()->json(['success'=>'branchList updated']);
         };
     }
 

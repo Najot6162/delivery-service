@@ -38,11 +38,10 @@ class ConfigTimeController extends Controller
             }
 
             if ($delivery->save()) {
-                echo "status time updated";
+                return response()->json(['success'=>'status time updated']);
             };
         }
-
-        return true;
+        return "ok";
     }
 
     public function creteConfigTime(Request $request)
@@ -51,19 +50,16 @@ class ConfigTimeController extends Controller
             'user_id' => 'required',
             'time' => 'required|unique:config_times',
         ]);
-
         if ($validator->fails()) {
             return response()->json([
                 'status_code' => 400,
                 'message' => $validator->errors()
             ], 400);
         }
-
         $config_time = new ConfigTime();
         $config_time->user_id = $request->user_id;
         $config_time->time = $request->time;
         $config_time->active = $request->active;
-
         if ($config_time->save()) {
             $config_times = ConfigTime::whereNotIn('id', [$config_time->id])->get();
             foreach ($config_times as $time) {
@@ -85,13 +81,13 @@ class ConfigTimeController extends Controller
             $config_time = ConfigTime::findOrFail($time->id);
             $config_time->active = 0;
             if ($config_time->save()) {
-                echo " updated inactive config_time \n";
+                return response()->json(["success"=>" updated inactive config_time \n"]);
             };
         }
         $config_time = ConfigTime::findOrFail($request->id);
         $config_time->active = 1;
         if ($config_time->save()) {
-            echo " updated active config_time   ";
+            return response()->json(["success"=>" updated inactive config_time \n"]);
         };
     }
 
