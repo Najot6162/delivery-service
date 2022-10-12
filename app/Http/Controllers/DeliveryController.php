@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\WebsocketDemoEvent;
 use App\Http\Resources\BranchResource;
+use App\Models\DeliveryJson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\DeliveryApp;
@@ -24,6 +25,12 @@ class DeliveryController extends Controller
     public function CreateDelivery(Request $request)
     {
         try {
+            //insert log json
+            $deliveryJson = new DeliveryJson();
+            $deliveryJson->data = $request->all();
+            if ($deliveryJson->save()){
+                echo "delivery json saved";
+            }
 
             $uuid = Str::uuid()->toString();
             $user = Auth::user();

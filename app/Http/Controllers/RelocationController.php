@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\BranchResource;
+use App\Models\RelocationJson;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -20,6 +21,13 @@ class RelocationController extends Controller
 {
     public function CreateRelocation(Request $request)
     {
+        //insert log json
+        $relocationJson = new RelocationJson();
+        $relocationJson->data = $request->all();
+        if ($relocationJson->save()){
+            echo "relocation json saved";
+        }
+
         $uuid = Str::uuid()->toString();
         $branches = [
             'branch_send_id' => [],
