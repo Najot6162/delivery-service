@@ -217,7 +217,7 @@ class UserController extends Controller
             $user_permission = UserPermission::findOrFail($req['id']);
             $user_permission->value = $req['value'];
             if ($user_permission->save()) {
-                return response()->json(["success"=>"updated permission\n"]);
+               echo "updated permission\n";
             }
         }
     }
