@@ -81,8 +81,8 @@ class DeliveryController extends Controller
             $delivery->provodka = $request[0]['PRAVODKA'];
             $delivery->content = $request[0]['Content'];
             $delivery->orienter = $request[0]['Orinter'];
-            $delivery->client = $request[0]['AGENT'];
-            $delivery->client_id = $request[0]['AGENTID'];
+            $delivery->client = $request[0]['GUID'];
+            $delivery->client_id = $request[0]['GUIDID'];
             $delivery->group_price = $request[0]['GroupPrice'];
             $delivery->vip_oplata = $request[0]['VidOplata'];
             $delivery->id_1c = $request[0]['Id1C'];
@@ -116,8 +116,8 @@ class DeliveryController extends Controller
                 $delivery_products->save();
             };
             $delivery_client = new Client();
-            $delivery_client->name = $request[0]['AGENT'];
-            $delivery_client->client_id = $request[0]['AGENTID'];
+            $delivery_client->name = $request[0]['GUID'];
+            $delivery_client->client_id = $request[0]['GUIDID'];
             $delivery_client->save();
 
             $deliveryApp = DeliveryApp::with(['pickup_time', 'pickup_time.user', 'pickup_time.user.carModel', 'pickup_time.branch', 'branch', 'branch_sale',
