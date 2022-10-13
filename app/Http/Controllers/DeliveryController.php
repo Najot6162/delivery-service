@@ -6,6 +6,7 @@ use App\Events\WebsocketDemoEvent;
 use App\Http\Resources\BranchResource;
 use App\Models\DeliveryJson;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use App\Models\DeliveryApp;
 use App\Models\Files;
@@ -193,8 +194,9 @@ class DeliveryController extends Controller
     public function gettAllDelivery(Request $request)
     {
         $search = $request['search'] ?? "";
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
+        $start_date = Carbon::parse("$request->start_date 00:00:00")->format('Y-m-d H:i:s');
+        $end_date= Carbon::parse("$request->end_date 23:59:59")->format('Y-m-d H:i:s');
+
         $deliveries = DeliveryApp::with(['pickup_time', 'pickup_time.user', 'pickup_time.user.carModel', 'pickup_time.branch', 'branch', 'branch_sale',
             'files', 'user', 'config_time', 'delivery_product', 'delivery_client', 'agents', 'driver'])
             ->whereHas('agents', function ($q) use ($search) {

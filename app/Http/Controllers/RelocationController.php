@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BranchResource;
 use App\Models\RelocationJson;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -116,8 +117,9 @@ class RelocationController extends Controller
     public function getAllRelocation(Request $request)
     {
         $search = $request['search'] ?? "";
-        $start_date = $request->start_date;
-        $end_date = $request->end_date;
+        $start_date = Carbon::parse("$request->start_date 00:00:00")->format('Y-m-d H:i:s');
+        $end_date= Carbon::parse("$request->end_date 23:59:59")->format('Y-m-d H:i:s');
+
         $branchs = BranchList::get();
         $send_branches = array();
         $receive_branches = array();
