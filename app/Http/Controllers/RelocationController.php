@@ -117,8 +117,8 @@ class RelocationController extends Controller
     public function getAllRelocation(Request $request)
     {
         $search = $request['search'] ?? "";
-        $start_date = Carbon::parse("$request->start_date 00:00:00")->format('Y-m-d H:i:s');
-        $end_date= Carbon::parse("$request->end_date 23:59:59")->format('Y-m-d H:i:s');
+        $start_date = $request->start_date;
+        $end_date= $request->end_date;
 
         $branchs = BranchList::get();
         $send_branches = array();
