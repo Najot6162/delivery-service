@@ -25,7 +25,7 @@ class UserSeeder extends Seeder
             [
                 'email' => 'admin@gmail.com',
                 'is_admin' => 1,
-                'phone' => '998901234561',
+                'phone' => '998901234567',
                 'address' => 'Yunusobod',
                 'active' => 1,
                 'branch_id' => 1,
@@ -33,53 +33,6 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('123456'),
                 'role_id' => 1
             ],
-//            [
-//                'email' => 'xxx@gmail.com',
-//                'is_admin' => 0,
-//                'phone' => '998901234562',
-//                'address' => 'Yunusobod',
-//                'car_model_id' => 1,
-//                'active' => 1,
-//                'branch_id' => 1,
-//                'name' => 'driver',
-//                'password' => bcrypt('123456'),
-//                'role_id' => 4
-//            ],
-//            [
-//                'email' => 'zzz@gmail.com',
-//                'is_admin' => 0,
-//                'phone' => '998901234563',
-//                'address' => 'Yunusobod',
-//                'car_model_id' => 1,
-//                'active' => 1,
-//                'branch_id' => 1,
-//                'name' => 'driver',
-//                'password' => bcrypt('123456'),
-//                'role_id' => 3
-//            ],
-//            [
-//                'email' => 'driver@gmail.com',
-//                'is_admin' => 1,
-//                'phone' => '998901234564',
-//                'address' => 'Yunusobod',
-//                'active' => 1,
-//                'branch_id' => 1,
-//                'name' => 'admin',
-//                'password' => bcrypt('123456'),
-//                'role_id' => 4
-//            ],
-//            [
-//                'email' => 'driver5@gmail.com',
-//                'is_admin' => 0,
-//                'phone' => '998901234565',
-//                'address' => 'Yunusobod',
-//                'car_model_id' => 1,
-//                'active' => 1,
-//                'branch_id' => 1,
-//                'name' => 'driver',
-//                'password' => bcrypt('123456'),
-//                'role_id' => 5
-//            ]
         ];
         $car_models = [
             [
