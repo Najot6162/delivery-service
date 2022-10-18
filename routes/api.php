@@ -15,7 +15,7 @@ use \App\Http\Controllers\ProblemController;
 use \App\Http\Controllers\NotificationController;
 use \App\Http\Controllers\FileController;
 use \Illuminate\Support\Facades\Broadcast;
-
+use App\Http\Controllers\WebNotificationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -41,6 +41,10 @@ Route::group(['namespace' => 'Api'], function () {
 
     Route::group(['middleware' => 'auth:api'], function () {
         Route::post('/logout', [AuthController::class, 'logout']);
+
+        //Delivery Notification
+        Route::get('/get-delivery-notification',[WebNotificationController::class,'getDeliveryNotification']);
+        Route::get('/read-notification/{notification}',[WebNotificationController::class,'readNotification']);
 
         //Delivery Api
         Route::post('/create-delivery', [DeliveryController::class, 'CreateDelivery']);

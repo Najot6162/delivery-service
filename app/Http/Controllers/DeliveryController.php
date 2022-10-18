@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\WebsocketDemoEvent;
 use App\Http\Resources\BranchResource;
 use App\Models\DeliveryJson;
+use App\Notifications\DeliveryNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Validator;
 use App\Models\DeliveryApp;
 use App\Models\Files;
 use App\Models\Client;
@@ -18,7 +16,6 @@ use App\Models\ConfigTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\Agent;
-use App\Http\Controllers\NotificationController;
 use PharIo\Version\Exception;
 
 class DeliveryController extends Controller
@@ -123,7 +120,7 @@ class DeliveryController extends Controller
 
             $deliveryApp = DeliveryApp::with(['pickup_time', 'pickup_time.user', 'pickup_time.user.carModel', 'pickup_time.branch', 'branch', 'branch_sale',
                 'files', 'user', 'config_time', 'delivery_product', 'delivery_client', 'agents'])->findOrFail($delivery->id);
-            broadcast(new WebsocketDemoEvent(['product' => $deliveryApp]));
+            auth()->user()->notify(new DeliveryNotification($deliveryApp));
             return response()->json([
                 'status_code' => 201,
                 'message' => 'all data saved'
